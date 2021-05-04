@@ -15,48 +15,51 @@ user_hand = Cards.draw_cards(deck, 15)
 cpu_hand = Cards.draw_cards(deck, 15)
 
 
-def book_management(player):
-    
+def book_management(gameplay):
+    def wrapper(*args, **kwargs):
 
 
-    point = 0
-    point = check_book(player)
-
-
-
-
-    user_pt_adder = 0
-    cpu_pt_adder = 0
-
-    if player == user_hand:
-        if point > 0:
-            user_pt_adder = point + user_pt_adder
-    if player == cpu_hand:
-        if point > 0:
-            cpu_pt_adder = point + cpu_pt_adder
-
-    global user_points
-    global cpu_points
-
-    user_points = user_points + user_pt_adder
-    cpu_points = cpu_points + cpu_pt_adder
-
-    if user_pt_adder > 0 or cpu_pt_adder > 0:
-        print('You have ' + str(user_points) + ' books.')
-        print('CPU has ' + str(cpu_points) + ' books.')
-        print()
-
-    if user_points > 6:
-        print()
-        print('YOU WIN')
-        sys.exit()
-    if cpu_points > 6:
-        print()
-        print('YOU LOSE')
-        sys.exit()
+        point = 0
+        point = check_book()
 
 
 
+
+        user_pt_adder = 0
+        cpu_pt_adder = 0
+
+        if turn == 'cpu':
+            if point > 0:
+                user_pt_adder = point + user_pt_adder
+        if turn == 'user':
+            if point > 0:
+                cpu_pt_adder = point + cpu_pt_adder
+
+        global user_points
+        global cpu_points
+
+        user_points = user_points + user_pt_adder
+        cpu_points = cpu_points + cpu_pt_adder
+
+        if user_pt_adder > 0 or cpu_pt_adder > 0:
+            print('You have ' + str(user_points) + ' books.')
+            print('CPU has ' + str(cpu_points) + ' books.')
+            print()
+
+        if user_points > 6:
+            print()
+            print('YOU WIN')
+            sys.exit()
+        if cpu_points > 6:
+            print()
+            print('YOU LOSE')
+            sys.exit()
+
+        return gameplay(*args, **kwargs)
+    return wrapper
+
+
+@book_management
 def user_request_cards():
     print('You ask: Do you have any... (2-10,JQKA) ? ',end='')
     while True:
@@ -74,6 +77,7 @@ def user_request_cards():
             print('Try input again.')
             continue
 
+@book_management
 def cpu_AI(hand):
 
     import random
@@ -106,7 +110,7 @@ def cpu_AI(hand):
     return request
 
 
-
+@book_management
 def check_hand(player_hand, req):
     req_C = str(req + 'C')
     req_D = str(req + 'D')
@@ -160,6 +164,7 @@ def check_hand(player_hand, req):
         fishing = True
         return fishing
 
+@book_management
 def go_fishing(player):
 
     if len(deck) == 0:
@@ -185,7 +190,14 @@ def go_fishing(player):
             print()
 
 
-def check_book(hand):
+def check_book():
+    global turn
+
+    if turn == 'cpu':
+        hand = user_hand
+    else:
+        hand = cpu_hand
+
     book = []
     point = 0  #quick test
     for card in hand:
@@ -220,13 +232,18 @@ user_points = 0
 global cpu_points
 cpu_points = 0
 
+global turn
+
+
 
 
 '''game loop'''
 while True:
     '''USER TURN'''
+    turn = 'user'
     #start with displaying cards in your hand
     print('The following cards are in your hand: ', end='')
+
     Cards.print_cards(user_hand)
 
     #print('The following cards are in cpu''s hand: ', end='')
@@ -235,12 +252,12 @@ while True:
     #user's turn to request if cpu has requested face value
     user_card_requested = user_request_cards()
 
-    book_management(user_hand)
+
 
     #check cpu hand with requested card and removes cpu cards
     fishing = check_hand(cpu_hand, user_card_requested)
 
-    book_management(user_hand)
+
 
     #check to see if user needs to go fishing
     if fishing is True:
@@ -248,9 +265,10 @@ while True:
         go_fishing(user_hand)
         fishing = False
 
-    book_management(user_hand)
+
 
     '''CPU TURN'''
+    turn = 'cpu'
 
 
     cpu_card_requested = cpu_AI(cpu_hand)
