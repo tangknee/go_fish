@@ -14,16 +14,11 @@ deck = Cards.shuffle_cards(game_deck)
 user_hand = Cards.draw_cards(deck, 15)
 cpu_hand = Cards.draw_cards(deck, 15)
 
-
 def book_management(gameplay):
     def wrapper(*args, **kwargs):
 
-
         point = 0
         point = check_book()
-
-
-
 
         user_pt_adder = 0
         cpu_pt_adder = 0
@@ -57,7 +52,6 @@ def book_management(gameplay):
 
         return gameplay(*args, **kwargs)
     return wrapper
-
 
 @book_management
 def user_request_cards():
@@ -108,7 +102,6 @@ def cpu_AI(hand):
         print('CPU asks: Do you have any... ' + str(request) + "'s?")
 
     return request
-
 
 @book_management
 def check_hand(player_hand, req):
@@ -189,7 +182,6 @@ def go_fishing(player):
             print('CPU has ' + str(len(cpu_hand)) + ' cards.')
             print()
 
-
 def check_book():
     global turn
 
@@ -221,12 +213,6 @@ def check_book():
         point = 1
     return point
 
-
-
-
-
-
-
 global user_points
 user_points = 0
 global cpu_points
@@ -234,30 +220,20 @@ cpu_points = 0
 
 global turn
 
-
-
-
 '''game loop'''
 while True:
-    '''USER TURN'''
+
     turn = 'user'
     #start with displaying cards in your hand
     print('The following cards are in your hand: ', end='')
 
     Cards.print_cards(user_hand)
 
-    #print('The following cards are in cpu''s hand: ', end='')
-    #Cards.print_cards(cpu_hand)
-
     #user's turn to request if cpu has requested face value
     user_card_requested = user_request_cards()
 
-
-
     #check cpu hand with requested card and removes cpu cards
     fishing = check_hand(cpu_hand, user_card_requested)
-
-
 
     #check to see if user needs to go fishing
     if fishing is True:
@@ -265,21 +241,11 @@ while True:
         go_fishing(user_hand)
         fishing = False
 
-
-
-    '''CPU TURN'''
     turn = 'cpu'
-
 
     cpu_card_requested = cpu_AI(cpu_hand)
 
-    input()
-
-    book_management(cpu_hand)
-
     fishing = check_hand(user_hand, cpu_card_requested)
-
-    book_management(cpu_hand)
 
     #check to see if CPU needs to go fishing
     if fishing is True:
@@ -287,8 +253,5 @@ while True:
         go_fishing(cpu_hand)
 
         fishing = False
-
-    book_management(cpu_hand)
-
 
     continue
